@@ -11,7 +11,6 @@ const io = new Server(server , {
     }
 })
 
-
 const _dirname = path.dirname("")
 const buildPath = path.join(_dirname  , "../client/build");
 
