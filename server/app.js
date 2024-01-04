@@ -9,7 +9,7 @@ const { Game } = require("./models");
 // added db now test on aws
 
 const db = require("./config/connection");
-// db.once("open", () => {
+// db.oncecd ("open", () => {
 //   app.listen(5001, () => {
 //     // find games
 //     Game.find({}).then((games) => {
