@@ -16,8 +16,8 @@ import PropCalculator from "./pages/PropCalculator";
 import Rankings from "./pages/Rankings";
 import Stats from "./pages/Stats";
 const httpLink = createHttpLink({
-  // uri: "http://3.141.216.229:3001/graphql",
-  uri: "http://localhost:3001/graphql",
+  uri: "http://18.119.85.42:5001/graphql",
+  // uri: "http://localhost:6001/graphql",
   // Replace with your server's GraphQL endpoint
 });
 // scp -r -i ./sports_brew.pem ./client/build/* ubuntu@ec2-3-141-216-229.us-east-2.compute.amazonaws.com:~/client
@@ -38,40 +38,42 @@ const client = new ApolloClient({
 
 function App() {
   return (
-    <Router>
-      <Container id="homeContainer">
-        <Row className="button-row">
-          <Col className="buttonCol">
-            <Link to="/rankings">
-              <Button className="homeButtons" variant="primary" size="lg">
-                Rankings
-              </Button>
-            </Link>
-          </Col>
-          <Col className="buttonCol">
-            <Link to="/stats">
-              <Button className="homeButtons" variant="secondary" size="lg">
-                Stats
-              </Button>
-            </Link>
-          </Col>
-        </Row>
-        <Row className="button-row">
-          <Col className="buttonCol">
-            <Link to="/propcalc">
-              <Button className="homeButtons" variant="success" size="lg">
-                Prop Calc
-              </Button>
-            </Link>
-          </Col>
-        </Row>
-        <Routes>
-          <Route path="/rankings" element={<Rankings />} />
-          <Route path="/stats" element={<Stats />} />
-          <Route path="/propcalc" element={<PropCalculator />} />
-        </Routes>
-      </Container>
-    </Router>
+    <ApolloProvider client={client}>
+      <Router>
+        <Container id="homeContainer">
+          <Row className="button-row">
+            <Col className="buttonCol">
+              <Link to="/rankings">
+                <Button className="homeButtons" variant="primary" size="lg">
+                  Rankings
+                </Button>
+              </Link>
+            </Col>
+            <Col className="buttonCol">
+              <Link to="/stats">
+                <Button className="homeButtons" variant="secondary" size="lg">
+                  Stats
+                </Button>
+              </Link>
+            </Col>
+          </Row>
+          <Row className="button-row">
+            <Col className="buttonCol">
+              <Link to="/propcalc">
+                <Button className="homeButtons" variant="success" size="lg">
+                  Prop Calc
+                </Button>
+              </Link>
+            </Col>
+          </Row>
+          <Routes>
+            <Route path="/rankings" element={<Rankings />} />
+            <Route path="/stats" element={<Stats />} />
+            <Route path="/propcalc" element={<PropCalculator />} />
+          </Routes>
+        </Container>
+      </Router>
+    </ApolloProvider>
   );
 }
 export default App;

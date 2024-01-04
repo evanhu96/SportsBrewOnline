@@ -9,17 +9,17 @@ const { Game } = require("./models");
 // added db now test on aws
 
 const db = require("./config/connection");
-db.once("open", () => {
-  app.listen(4001, () => {
-    // find games
-    Game.find({}).then((games) => {
-      console.log(games);
-    });
+// db.once("open", () => {
+//   app.listen(5001, () => {
+//     // find games
+//     Game.find({}).then((games) => {
+//       console.log(games);
+//     });
     
-    console.log(`API server running on 4001 ${4001}!`);
-    console.log(`Use GraphQL at http://localhost:${4001}${server.graphqlPath}`);
-  });
-});
+//     console.log(`API server running on 5001 ${5001}!`);
+//     console.log(`Use GraphQL at http://localhost:${5001}${server.graphqlPath}`);
+//   });
+// });
 
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -58,4 +58,4 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(5001, () => console.log("Listening to port 5001"));
+server.listen(6001, () => console.log("Listening to port 6001"));
