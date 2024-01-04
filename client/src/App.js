@@ -16,7 +16,7 @@ import PropCalculator from "./pages/PropCalculator";
 import Rankings from "./pages/Rankings";
 import Stats from "./pages/Stats";
 const httpLink = createHttpLink({
-  uri: "http://18.119.85.42:5001/graphql",
+  uri: "http://18.119.85.42:6001/graphql",
   // uri: "http://localhost:6001/graphql",
   // Replace with your server's GraphQL endpoint
 });
