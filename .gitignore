@@ -4,7 +4,7 @@
 /node_modules
 /.pnp
 .pnp.js
-.pem
+SBK.pem
 package.json
 package-lock.json
 
