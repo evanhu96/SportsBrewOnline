@@ -3,12 +3,12 @@ const http = require("http");
 const Server = require("socket.io").Server;
 const app = express();
 const path = require("path");
-const { Game } = require("./models");
+// const { Game } = require("./models");
 
 
 // added db now test on aws
 
-const db = require("./config/connection");
+// const db = require("./config/connection");
 // db.oncecd ("open", () => {
 //   app.listen(5001, () => {
 //     // find games
