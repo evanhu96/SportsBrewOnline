@@ -6,7 +6,7 @@ const Game = require("./models/Game");
 const { typeDefs, resolvers } = require("./schemas");
 const db = require("./config/connection");
 
-const PORT = process.env.PORT || 6001;
+const PORT = process.env.PORT || 443;
 const app = express();
 const server = new ApolloServer({
   typeDefs,
