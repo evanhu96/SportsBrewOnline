@@ -13,6 +13,7 @@ const Stats = () => {
   const { loading, error, data, refetch } = useQuery(QUERY_TEAM_PLAYERS, {
     variables: { team: "" },
   });
+  console.log(data,'dada')
   const { data: oddsData } = useQuery(GET_ODDS);
   useEffect(() => {
     refetch({ team: team });

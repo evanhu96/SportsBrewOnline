@@ -1,61 +1,50 @@
 const express = require("express");
-const http = require("http");
-const Server = require("socket.io").Server;
-const app = express();
+const { ApolloServer } = require("apollo-server-express");
 const path = require("path");
-// const { Game } = require("./models");
+require("dotenv").config();
+const Game = require("./models/Game");
+const { typeDefs, resolvers } = require("./schemas");
+const db = require("./config/connection");
 
-
-// added db now test on aws
-
-// const db = require("./config/connection");
-// db.oncecd ("open", () => {
-//   app.listen(5001, () => {
-//     // find games
-//     Game.find({}).then((games) => {
-//       console.log(games);
-//     });
-    
-//     console.log(`API server running on 5001 ${5001}!`);
-//     console.log(`Use GraphQL at http://localhost:${5001}${server.graphqlPath}`);
-//   });
-// });
-
-const server = http.createServer(app);
-const io = new Server(server, {
-  cors: {
-    origin: "*",
-  },
+const PORT = process.env.PORT || 6001;
+const app = express();
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
 });
 
-const _dirname = path.dirname("");
-const buildPath = path.join(_dirname, "../../../../var/www/html/build");
-// const buildPath = path.join(_dirname  , "../client/build");
+console.log("after server");
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 
-app.use(express.static(buildPath));
-
-app.get("/*", function (req, res) {
-  res.sendFile(
-    path.join(__dirname, "../../../../var/www/html/build/index.html"),
-    // path.join(__dirname, "../client/build/index.html"),
-    function (err) {
-      if (err) {
-        res.status(500).send(err);
-      }
-    }
-  );
-});
-
-io.on("connection", (socket) => {
-  console.log("We are connected");
-
-  socket.on("chat", (chat) => {
-    io.emit("chat", chat);
+if (process.env.NODE_ENV === "development") {
+  console.log("in development");
+  app.use(express.static(path.join(__dirname, "../client/build")));
+  app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "../client/build/index.html"));
   });
-
-  socket.on("disconnect", () => {
-    console.log("disconnected");
+} else {
+  console.log("not in development");
+  const buildPath = "../../../../var/www/html/build";
+  app.use(express.static(path.join(__dirname, buildPath)));
+  app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, buildPath, "index.html"));
   });
-});
+}
 
-server.listen(6001, () => console.log("Listening to port 6001"));
+// Create a new instance of an Apollo server with the GraphQL schema
+const startApolloServer = async (typeDefs, resolvers) => {
+  await server.start();
+  server.applyMiddleware({ app });
+
+  db.once("open", () => {
+    app.listen(PORT, () => {
+      console.log(`API server running on port ${PORT}!`);
+      console.log(
+        `Use GraphQL at http://localhost:${PORT}${server.graphqlPath}`
+      );
+    });
+  });
+};
+// Call the async function to start the server
+startApolloServer(typeDefs, resolvers);

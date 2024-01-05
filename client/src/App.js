@@ -39,6 +39,7 @@ const client = new ApolloClient({
 function App() {
   return (
     <ApolloProvider client={client}>
+      {console.log(client)}
       <Router>
         <Container id="homeContainer">
           <Row className="button-row">
