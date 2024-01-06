@@ -16,7 +16,7 @@ import PropCalculator from "./pages/PropCalculator";
 import Rankings from "./pages/Rankings";
 import Stats from "./pages/Stats";
 const httpLink = createHttpLink({
-  uri: "https://sportsbrew.online:6001/graphql",
+  uri: "https://sportsbrew.online/graphql",
   // uri: "https://localhost:6001/graphql",
   // Replace with your server's GraphQL endpoint
 });
