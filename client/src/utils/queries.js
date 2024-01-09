@@ -30,21 +30,9 @@ export const QUERY_TEAM_PLAYERS = gql`
       _id
       name
       team
-      MIN
-      FGA
-      FGM
-      FTA
-      FTM
-      OREB
-      DREB
-      REB
-      AST
-      STL
-      BLK
-      TO
-      PF
-      plusMinus
       PTS
+      REB
+      AST 
       type
       firstHits {
         make
@@ -52,8 +40,6 @@ export const QUERY_TEAM_PLAYERS = gql`
         foul
         block
         reb
-        steal
-        timeout
         subOut
         subIn
         turnover

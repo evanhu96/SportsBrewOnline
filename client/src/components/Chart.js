@@ -17,80 +17,47 @@ function sma(arr, length) {
 }
 
 const YourComponent = ({ playerName, data }) => {
-  const [selectedProp, setSelectedProp] = useState("");
-  const [playerData, setPlayerData] = useState([]);
   const [dataSets, setDataSets] = useState([]); // [ { label: "Player 1", data: [1, 2, 3, 4, 5] }, { label: "Player 2", data: [1, 2, 3, 4, 5] }
 
-  const properties = [
-    "MIN",
-    "PTS",
-    "AST",
-    "DREB",
-    "OREB",
-    "REB",
-    "FGA",
-    "FGM",
-    "3PTA",
-    "3PTM",
-    "FTA",
-    "FTM",
-    "+/-",
-    "BLK",
-    "TO",
-    "PF",
-    "STL",
-  ];
-
   const handlePropChange = (prop) => {
-    setSelectedProp(prop);
-  };
-
-  const handleAdd = () => {
-    if (selectedProp) {
-      const newPlayerData = [
-        ...playerData,
-        { player: playerName, prop: selectedProp },
-      ];
-      console.log(playerName);
-      // log player using data array
-      const playerStats = data.teamPlayers.filter(
-        (player) => player.name === playerName
-      );
-      console.log(playerStats, selectedProp);
-      setDataSets([
-        ...dataSets,
-        {
-          label: playerName + selectedProp,
-          data: sma(playerStats[0][selectedProp], 5),
-        },
-      ]);
-      setPlayerData(newPlayerData);
-      setSelectedProp("");
-    }
+    console.log(playerName);
+    // log player using data array
+    const playerStats = data.teamPlayers.filter(
+      (player) => player.name === playerName
+    );
+    console.log(playerStats, prop);
+    setDataSets([
+      {
+        label: playerName + " " + prop,
+        data: sma(playerStats[0][prop], 5),
+      },
+    ]);
   };
 
   return (
     <Container className="calculator">
       <Stack>
-        <Form>
-          <Dropdown>
-            <Dropdown.Toggle variant="success" id="prop-dropdown">
-              {selectedProp ? selectedProp : "Select Prop"}
-            </Dropdown.Toggle>
-            <Dropdown.Menu>
-              {properties.map((prop) => (
-                <Dropdown.Item
-                  key={prop}
-                  onClick={() => handlePropChange(prop)}
-                >
-                  {prop}
-                </Dropdown.Item>
-              ))}
-            </Dropdown.Menu>
-          </Dropdown>
-
-          <Button variant="primary" onClick={handleAdd}>
-            Add
+        <Form id="chartForm">
+          <Button
+            variant="primary"
+            value="PTS"
+            onClick={(e) => handlePropChange(e.target.value)}
+          >
+            Points
+          </Button>
+          <Button
+            variant="primary"
+            value="REB"
+            onClick={(e) => handlePropChange(e.target.value)}
+          >
+            Rebounds
+          </Button>
+          <Button
+            variant="primary"
+            value="AST"
+            onClick={(e) => handlePropChange(e.target.value)}
+          >
+            Assists
           </Button>
         </Form>
 

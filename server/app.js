@@ -17,20 +17,20 @@ console.log("after server");
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
-if (process.env.NODE_ENV === "development") {
+// if (process.env.NODE_ENV === "development") {
   console.log("in development");
   app.use(express.static(path.join(__dirname, "../client/build")));
   app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "../client/build/index.html"));
   });
-} else {
-  console.log("not in development");
-  const buildPath = "../../../../var/www/html/build";
-  app.use(express.static(path.join(__dirname, buildPath)));
-  app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, buildPath, "index.html"));
-  });
-}
+// } else {
+//   console.log("not in development");
+//   const buildPath = "../../../../var/www/html/build";
+//   app.use(express.static(path.join(__dirname, buildPath)));
+//   app.get("/", (req, res) => {
+//     res.sendFile(path.join(__dirname, buildPath, "index.html"));
+//   });
+// }
 
 // Create a new instance of an Apollo server with the GraphQL schema
 const startApolloServer = async (typeDefs, resolvers) => {

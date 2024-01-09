@@ -4,7 +4,7 @@ import { Button, Container, Stack } from "react-bootstrap";
 import PlayerCard from "../components/PlayerCard";
 import Chart from "../components/Chart";
 import Teams from "../components/Teams";
-import { QUERY_TEAM_PLAYERS,GET_ODDS } from "../utils/queries";
+import { QUERY_TEAM_PLAYERS, GET_ODDS } from "../utils/queries";
 
 const Stats = () => {
   const [team, setTeam] = useState("");
@@ -13,7 +13,7 @@ const Stats = () => {
   const { loading, error, data, refetch } = useQuery(QUERY_TEAM_PLAYERS, {
     variables: { team: "" },
   });
-  console.log(data,'dada')
+  console.log(data, "dada");
   const { data: oddsData } = useQuery(GET_ODDS);
   useEffect(() => {
     refetch({ team: team });
@@ -29,20 +29,19 @@ const Stats = () => {
     }
     const teamPlayers = data.teamPlayers;
     // alphabetize players by name
-    const sortedPlayers =[]
+    const sortedPlayers = [];
     for (let i = 0; i < teamPlayers.length; i++) {
-      sortedPlayers.push(teamPlayers[i])
+      sortedPlayers.push(teamPlayers[i]);
     }
     sortedPlayers.sort((a, b) => {
       if (a.name < b.name) {
-        return -1
+        return -1;
       }
       if (a.name > b.name) {
-        return 1
+        return 1;
       }
-      return 0
-    })
-    
+      return 0;
+    });
 
     // Chunk players into arrays with 3 players each
     const chunkedPlayers = [];
@@ -65,11 +64,11 @@ const Stats = () => {
       </div>
     ));
   };
+  console.log(team);
   return (
     <div>
       {team === "" ? (
         <div>
-          <h1>Choose a team</h1>
           <Teams setTeam={setTeam} />
         </div>
       ) : (
@@ -78,6 +77,7 @@ const Stats = () => {
           <span style={{ display: "flex", justifyContent: "center" }}>
             <h1>{playerName}</h1>
           </span>
+          <Button onClick={() => setTeam("")}>Back</Button>
           <Container
             style={{
               display: "flex",
@@ -100,7 +100,7 @@ const Stats = () => {
                       },
                     }}
                   >
-                    <PlayerCard player={player} odds={oddsData} team = {team}/>
+                    <PlayerCard player={player} odds={oddsData} team={team} />
                     <Chart playerName={player.name} data={data} />
                   </Stack>
                 </>

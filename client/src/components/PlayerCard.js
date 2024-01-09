@@ -12,7 +12,7 @@ const propNamer = {
   REB: "rebound",
 };
 const PlayerCard = ({ player, odds, team }) => {
-  console.log(player)
+  console.log(player);
   const [statType, setStatType] = useState("");
   const [prop, setProp] = useState("PTS");
   const [input, setInput] = useState(0);
@@ -42,25 +42,28 @@ const PlayerCard = ({ player, odds, team }) => {
 
     return chunkedKeys.map((column, colIndex) => (
       <div className="column" key={colIndex}>
-        {column.map((key, index) => (
-          <div className="propButtons" key={index}>
-            <Button
-              className="propButton"
-              style={{
-                variant: "none",
-                margin: "5px",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                backgroundColor: prop === key ? "yellow" : "transparent",
-              }}
-              variant="none"
-              onClick={() => setProp(key)}
-            >
-              {key}
-            </Button>
-          </div>
-        ))}
+        {column.map(
+          (key, index) =>
+            key.toLowerCase() !== "firsthits" && (
+              <div className="propButtons" key={index}>
+                <Button
+                  className="propButton"
+                  style={{
+                    variant: "none",
+                    margin: "5px",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    backgroundColor: prop === key ? "yellow" : "transparent",
+                  }}
+                  variant="none"
+                  onClick={() => setProp(key)}
+                >
+                  {key}
+                </Button>
+              </div>
+            )
+        )}
       </div>
     ));
   };
@@ -82,19 +85,17 @@ const PlayerCard = ({ player, odds, team }) => {
     for (let i = 2; i <= 10; i++) {
       const minValue = getMin(i) - 0.5;
       const maxValue = getMax(i) - 0.5;
-  
-      let minClass = '';
-      let maxClass = '';
-  
+
+      let minClass = "";
+      let maxClass = "";
+
       // Check conditions to determine classes for highlighting
-      if (maxValue < oddsAmt) {
-        maxClass = 'highlight-red';
-        console.log(i)
+      if (maxValue < oddsAmt && oddsAmt !== 1000) {
+        maxClass = "highlight-red";
+      } else if (minValue > oddsAmt) {
+        minClass = "highlight-green";
       }
-      if (minValue > oddsAmt) {
-        minClass = 'highlight-green';
-      }
-      console.log(maxClass)
+      console.log(maxClass);
       rows.push(
         <tr key={i}>
           <td className="text-center firstItem">{i}</td>
@@ -105,7 +106,7 @@ const PlayerCard = ({ player, odds, team }) => {
     }
     return rows;
   };
-  
+
   const renderFirstHits = () => {
     const firstHits = player.firstHits;
     const keysToSkip = ["__typename", "_id", "name", "team", "type"];
@@ -151,12 +152,7 @@ const PlayerCard = ({ player, odds, team }) => {
             >
               Streaks
             </Button>
-            <Button
-              onClick={() => setStatType("rate")}
-              style={{ margin: "5px" }}
-            >
-              Hit Rate
-            </Button>
+
             <Button
               onClick={() => setStatType("firstHits")}
               style={{ margin: "5px" }}
@@ -175,14 +171,14 @@ const PlayerCard = ({ player, odds, team }) => {
               justifyContent: "center",
             }}
           >
-            {statType === "streaks" && playerOdds && (
+            {statType === "streaks" && (
               <Table border="1">
                 <tr>
                   <th className="text-center firstItem"># of games</th>
                   <th className="text-center">Over</th>
                   <th className="text-center">Under</th>
                 </tr>
-                {renderRows(playerOdds.overAmt)}
+                {renderRows(playerOdds ? playerOdds.overAmt : 1000)}
               </Table>
             )}
             {statType === "rate" && (
@@ -210,6 +206,7 @@ const PlayerCard = ({ player, odds, team }) => {
               <>
                 {
                   <Table>
+                    <h3>(In Seconds)</h3>
                     <tbody>{renderFirstHits()}</tbody>
                   </Table>
                 }
