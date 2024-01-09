@@ -72,44 +72,10 @@ const NBATeams = ({ setTeam }) => {
     Pacific: ["GS", "LAC", "LAL", "PHX", "SAC"],
     Southwest: ["DAL", "HOU", "MEM", "NO", "SAS"],
   };
-  const nbaTeams = {
-    ATL: { abbreviation: "ATL", fullName: "Atlanta Hawks" },
-    BOS: { abbreviation: "BOS", fullName: "Boston Celtics" },
-    BKN: { abbreviation: "BKN", fullName: "Brooklyn Nets" },
-    CHA: { abbreviation: "CHA", fullName: "Charlotte Hornets" },
-    CHI: { abbreviation: "CHI", fullName: "Chicago Bulls" },
-    CLE: { abbreviation: "CLE", fullName: "Cleveland Cavaliers" },
-    DAL: { abbreviation: "DAL", fullName: "Dallas Mavericks" },
-    DEN: { abbreviation: "DEN", fullName: "Denver Nuggets" },
-    DET: { abbreviation: "DET", fullName: "Detroit Pistons" },
-    GS: { abbreviation: "GS", fullName: "Golden State Warriors" },
-    HOU: { abbreviation: "HOU", fullName: "Houston Rockets" },
-    IND: { abbreviation: "IND", fullName: "Indiana Pacers" },
-    LAC: { abbreviation: "LAC", fullName: "LA Clippers" },
-    LAL: { abbreviation: "LAL", fullName: "Los Angeles Lakers" },
-    MEM: { abbreviation: "MEM", fullName: "Memphis Grizzlies" },
-    MIA: { abbreviation: "MIA", fullName: "Miami Heat" },
-    MIL: { abbreviation: "MIL", fullName: "Milwaukee Bucks" },
-    MIN: { abbreviation: "MIN", fullName: "Minnesota Timberwolves" },
-    NOP: { abbreviation: "NOP", fullName: "New Orleans Pelicans" },
-    NYK: { abbreviation: "NYK", fullName: "New York Knicks" },
-    OKC: { abbreviation: "OKC", fullName: "Oklahoma City Thunder" },
-    ORL: { abbreviation: "ORL", fullName: "Orlando Magic" },
-    PHI: { abbreviation: "PHI", fullName: "Philadelphia 76ers" },
-    PHX: { abbreviation: "PHX", fullName: "Phoenix Suns" },
-    POR: { abbreviation: "POR", fullName: "Portland Trail Blazers" },
-    SAC: { abbreviation: "SAC", fullName: "Sacramento Kings" },
-    SAS: { abbreviation: "SAS", fullName: "San Antonio Spurs" },
-    TOR: { abbreviation: "TOR", fullName: "Toronto Raptors" },
-    UTAH: { abbreviation: "UTAH", fullName: "Utah Jazz" },
-    WAS: { abbreviation: "WAS", fullName: "Washington Wizards" },
-  };
+ 
 
-  const changeTeam = (division, teamName) => {
-    const teamAbb = Object.values(nbaTeams).find(
-      (team) => team.fullName.toLowerCase() === teamName.toLowerCase()
-    );
-    setTeam(teamAbb.abbreviation);
+  const changeTeam = (teamName) => {
+    setTeam(teamName);
   };
   return (
     <div className="divisionContainer">
@@ -120,7 +86,7 @@ const NBATeams = ({ setTeam }) => {
             {teamList.map((team, index) => (
               <Button
                 className="teamButton"
-                onClick={() => changeTeam(division, team)}
+                onClick={() => changeTeam(team)}
               >
                 <img
                   src={teamImages[team]}
