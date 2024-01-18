@@ -1,40 +1,24 @@
-const { RosterSpot, Rankings, BoxScore, Player, Game,Odds } = require("../models");
+const {
+  RosterSpot,
+  Rankings,
+  BoxScore,
+  Player,
+  DefRankings,
+} = require("../models");
 
 const resolvers = {
   Query: {
-    rankingsValues: async (_, { type, side, prop }) => {
-      console.log(side, prop, type);
+    defense: async (_, {}) => {
+      console.log("Defense")
       try {
-        const aggregatePipeline = [
-          {
-            $match: { type }, // Filter by type
-          },
-          {
-            $project: {
-              _id: 1,
-              name: "$name", // Assuming 'type' field represents name
-              value: `$${prop}.average`, // Access the 'prop' field and its 'average' property
-            },
-          },
-          {
-            $sort: {
-              value: side, // Sort by value based on 'side' parameter
-            },
-          },
-          {
-            $limit: 32, // Limit to 10 results
-          },
-        ];
-
-        const result = await Rankings.aggregate(aggregatePipeline);
-        return result;
+        const defRankings = await DefRankings.find({});
+        console.log(defRankings)
+        return defRankings;
       } catch (error) {
-        // Handle errors appropriately
-        throw new Error("Could not fetch rankings: " + error.message);
+        console.log(error);
       }
     },
     teamPlayers: async (_, { team }) => {
-      console.log('teamPlayers',team)
       try {
         const aggregatePipeline = [
           {
@@ -70,7 +54,8 @@ const resolvers = {
           },
         ];
 
-        const result = await Rankings.aggregate(aggregatePipeline);
+        const result = await Rankings.find();
+        console.log(result);
         console.log(result.length);
         const playerIds = result.map((player) => player.playerId);
         const epoch1MonthAgo = new Date().getTime() - 2592000000;
@@ -276,15 +261,6 @@ const resolvers = {
           value: hitRate,
           streak: streak,
         };
-      } catch (error) {
-        // Handle errors appropriately
-        throw new Error("Could not fetch rankings: " + error.message);
-      }
-    },
-    odds: async (_, {}) => {
-      try {
-        const result = await Odds.find({});
-        return result;
       } catch (error) {
         // Handle errors appropriately
         throw new Error("Could not fetch rankings: " + error.message);

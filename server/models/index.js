@@ -8,6 +8,7 @@ const Rankings = require("./Rankings");
 const FirstHit = require("./FirstHit");
 const Odds = require("./Odds");
 const GameToday = require("./GameToday");
+const DefRankings = require("./DefRankings");
 module.exports = {
   Game,
   BoxScore,
@@ -19,4 +20,5 @@ module.exports = {
   FirstHit,
   Odds,
   GameToday,
+  DefRankings,
 };

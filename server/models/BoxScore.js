@@ -1,8 +1,6 @@
 // BoxScore.js
 const { Schema, model } = require("mongoose");
-function validateNaN(value) {
-  return value === null || value === undefined || typeof value === "number";
-}
+
 const boxScoreSchema = new Schema({
   name: {
     type: String,
