@@ -17,24 +17,33 @@ const PlayerCard = ({ player, odds, team, defenseData }) => {
   if (odds) {
     vsTeam = odds.odds.find((odd) => odd.home === team || odd.away === team);
     vsTeam = vsTeam.home === team ? vsTeam.away : vsTeam.home;
-    pointOdds = odds.odds.find(
-      (odd) =>
+    try{
+
+      pointOdds = odds.odds.find(
+        (odd) =>
         (odd.home === team || odd.away === team) &&
         odd.prop === propNamer["PTS"] &&
         player.name === odd.name
-    ).overAmt;
-    assistOdds = odds.odds.find(
-      (odd) =>
-        (odd.home === team || odd.away === team) &&
-        odd.prop === propNamer["AST"] &&
-        player.name === odd.name
-    ).overAmt;
-    reboundOdds = odds.odds.find(
-      (odd) =>
-        (odd.home === team || odd.away === team) &&
-        odd.prop === propNamer["REB"] &&
-        player.name === odd.name
-    ).overAmt;
+        ).overAmt;
+      }catch{}
+      try{
+
+        assistOdds = odds.odds.find(
+          (odd) =>
+          (odd.home === team || odd.away === team) &&
+          odd.prop === propNamer["AST"] &&
+          player.name === odd.name
+          ).overAmt;
+        }catch{}
+        try{
+
+          reboundOdds = odds.odds.find(
+            (odd) =>
+            (odd.home === team || odd.away === team) &&
+            odd.prop === propNamer["REB"] &&
+            player.name === odd.name
+            ).overAmt;
+          }catch{}
   }
   const getHitRate = (array, odds) => {
     var hits = 0;

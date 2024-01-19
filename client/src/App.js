@@ -18,7 +18,6 @@ const httpLink = createHttpLink({
   // uri: "http://localhost:3001/graphql",
   // Replace with your server's GraphQL endpoint
 });
-// scp -r -i ./sports_brew.pem ./client/build/* ubuntu@ec2-3-141-216-229.us-east-2.compute.amazonaws.com:~/client
 const authLink = setContext((_, { headers }) => {
   const token = localStorage.getItem("id_token");
   return {
