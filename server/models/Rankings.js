@@ -18,6 +18,9 @@ const rankingSchema = new Schema({
   team: {
     type: String,
   },
+  position: {
+    type: String,
+  },
   MIN: {
     type: Object,
   },

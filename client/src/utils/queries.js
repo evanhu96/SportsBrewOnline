@@ -1,15 +1,4 @@
 import { gql } from "@apollo/client";
-
-export const QUERY_RANKINGS = gql`
-  query RankingsValues($type: String, $prop: String, $side: Float) {
-    rankingsValues(type: $type, prop: $prop, side: $side) {
-      _id
-      name
-      value
-    }
-  }
-`;
-
 export const FIRST_HITS_TYPE = gql`
   type FirstHits {
     make: Float
@@ -25,14 +14,15 @@ export const FIRST_HITS_TYPE = gql`
   }
 `;
 export const QUERY_TEAM_PLAYERS = gql`
-  query Query($team: String) {
-    teamPlayers(team: $team) {
+  query Query {
+    teamPlayers {
       _id
       name
       team
+      position
       PTS
       REB
-      AST 
+      AST
       type
       firstHits {
         make
@@ -64,6 +54,46 @@ export const QUERY_PROP_CALC = gql`
     }
   }
 `;
+export const GET_DEF_RANKINGS = gql`
+  query Defense {
+    defense {
+      _id
+      position
+      prop
+      ATL
+      BKN
+      BOS
+      CHA
+      CHI
+      CLE
+      DAL
+      DEN
+      DET
+      GS
+      HOU
+      IND
+      LAC
+      LAL
+      MEM
+      MIA
+      MIL
+      MIN
+      NO
+      NYK
+      OKC
+      ORL
+      PHI
+      PHX
+      POR
+      SAC
+      SAS
+      TOR
+      UTAH
+      WAS
+    }
+  }
+`;
+
 export const GET_ODDS = gql`
   query Odds {
     odds {

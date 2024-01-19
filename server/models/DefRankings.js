@@ -5,6 +5,10 @@ const defRankingSchema = new Schema({
     type: String,
     required: true,
   },
+  prop: {
+    type: String,
+    required: true,
+  },
   ATL: { type: Number, required: true },
   BKN: { type: Number, required: true },
   BOS: { type: Number, required: true },

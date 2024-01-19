@@ -3,33 +3,38 @@ const {
   Rankings,
   BoxScore,
   Player,
+  Odds,
   DefRankings,
 } = require("../models");
 
 const resolvers = {
   Query: {
     defense: async (_, {}) => {
-      console.log("Defense")
       try {
         const defRankings = await DefRankings.find({});
-        console.log(defRankings)
         return defRankings;
       } catch (error) {
         console.log(error);
       }
     },
-    teamPlayers: async (_, { team }) => {
+    odds: async (_, {}) => {
+      try {
+        const odds = await Odds.find({});
+        return odds;
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    teamPlayers: async (_, {}) => {
       try {
         const aggregatePipeline = [
-          {
-            $match: { team }, // Filter by type
-          },
-
           {
             $project: {
               _id: 1,
               playerId: "$playerId",
               name: "$name", // Assuming 'type' field represents name
+              team: "$team", // Assuming 'type' field represents name
+              position: "$position", // Assuming 'type' field represents name
               MIN: `$MIN.values`, // Access the 'prop' field and its 'average' property
               FGA: `$FGA.values`, // Access the 'prop' field and its 'average' property
               FGM: `$FGM.values`, // Access the 'prop' field and its 'average' property
@@ -49,14 +54,11 @@ const resolvers = {
             },
           },
 
-          {
-            $limit: 32, // Limit to 10 results
-          },
         ];
+        const result = await Rankings.aggregate(aggregatePipeline).catch(
+          (error) => console.log(error)
+        );
 
-        const result = await Rankings.find();
-        console.log(result);
-        console.log(result.length);
         const playerIds = result.map((player) => player.playerId);
         const epoch1MonthAgo = new Date().getTime() - 2592000000;
         const firstHitPipeLine = [
@@ -127,6 +129,7 @@ const resolvers = {
             (player) => player.playerId === playerId
           );
           playerData.firstHits = propertyAverages;
+
           combinedData.push(playerData);
         }
         return combinedData;

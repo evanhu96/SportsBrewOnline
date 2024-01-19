@@ -32,6 +32,7 @@ const typeDefs = gql`
     _id: ID
     name: String
     team: String
+    position: String
     MIN: [Float]
     FGA: [Float]
     FGM: [Float]
@@ -79,8 +80,39 @@ const typeDefs = gql`
     name: String
   }
   type defRankings {
-    _id:ID
+    _id: ID
     position: String
+    prop: String
+    ATL: Int
+    BKN: Int
+    BOS: Int
+    CHA: Int
+    CHI: Int
+    CLE: Int
+    DAL: Int
+    DEN: Int
+    DET: Int
+    GS: Int
+    HOU: Int
+    IND: Int
+    LAC: Int
+    LAL: Int
+    MEM: Int
+    MIA: Int
+    MIL: Int
+    MIN: Int
+    NO: Int
+    NYK: Int
+    OKC: Int
+    ORL: Int
+    PHI: Int
+    PHX: Int
+    POR: Int
+    SAC: Int
+    SAS: Int
+    TOR: Int
+    UTAH: Int
+    WAS: Int
   }
   input CalcInput {
     name: String
@@ -89,7 +121,7 @@ const typeDefs = gql`
   }
   type Query {
     propCalc(inputs: [CalcInput], team: String): Calculation!
-    teamPlayers(team: String): [RankingsArray]!
+    teamPlayers: [RankingsArray]!
     odds: [Odd]!
     defense: [defRankings]!
   }

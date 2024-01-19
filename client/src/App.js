@@ -15,7 +15,7 @@ import "./App.css";
 import Stats from "./pages/Stats";
 const httpLink = createHttpLink({
   uri: "https://sportsbrew.online/graphql",
-  // uri: "https://localhost:6001/graphql",
+  // uri: "http://localhost:3001/graphql",
   // Replace with your server's GraphQL endpoint
 });
 // scp -r -i ./sports_brew.pem ./client/build/* ubuntu@ec2-3-141-216-229.us-east-2.compute.amazonaws.com:~/client
@@ -37,7 +37,6 @@ const client = new ApolloClient({
 function App() {
   return (
     <ApolloProvider client={client}>
-      {console.log(client)}
       <Router>
         <Container id="homeContainer">
           <Stats />

@@ -11,210 +11,196 @@ const propNamer = {
   AST: "assist",
   REB: "rebound",
 };
-const PlayerCard = ({ player, odds, team }) => {
-  console.log(player);
-  const [statType, setStatType] = useState("");
-  const [prop, setProp] = useState("PTS");
-  const [input, setInput] = useState(0);
+const PlayerCard = ({ player, odds, team, defenseData }) => {
   // find odds with player.name and team props
-  const playerOdds = odds.odds.find(
-    (odd) =>
-      (odd.home === team || odd.away === team) &&
-      odd.prop === propNamer[prop] &&
-      player.name === odd.name
-  );
-
-  const percent =
-    (player[prop].filter((x) => x > input).length / player[prop].length) * 100;
-
-  const renderButtons = () => {
-    const keysToSkip = ["__typename", "_id", "name", "team", "type"];
-
-    const filteredKeys = Object.keys(player).filter(
-      (key) => !keysToSkip.includes(key)
-    );
-
-    const columnSize = 5;
-    const chunkedKeys = [];
-    for (let i = 0; i < filteredKeys.length; i += columnSize) {
-      chunkedKeys.push(filteredKeys.slice(i, i + columnSize));
-    }
-
-    return chunkedKeys.map((column, colIndex) => (
-      <div className="column" key={colIndex}>
-        {column.map(
-          (key, index) =>
-            key.toLowerCase() !== "firsthits" && (
-              <div className="propButtons" key={index}>
-                <Button
-                  className="propButton"
-                  style={{
-                    variant: "none",
-                    margin: "5px",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    backgroundColor: prop === key ? "yellow" : "transparent",
-                  }}
-                  variant="none"
-                  onClick={() => setProp(key)}
-                >
-                  {key}
-                </Button>
-              </div>
-            )
-        )}
-      </div>
-    ));
-  };
-  const getMin = (gamesInteger) => {
-    // get Min for the past number of games
-    const values = player[prop].slice(-gamesInteger);
-    const min = Math.min(...values);
-    return min;
-  };
-  const getMax = (gamesInteger) => {
-    // get Max for the past number of games
-    const values = player[prop].slice(-gamesInteger);
-    const max = Math.max(...values);
-    return max;
+  var pointOdds, assistOdds, reboundOdds, vsTeam;
+  if (odds) {
+    vsTeam = odds.odds.find((odd) => odd.home === team || odd.away === team);
+    vsTeam = vsTeam.home === team ? vsTeam.away : vsTeam.home;
+    pointOdds = odds.odds.find(
+      (odd) =>
+        (odd.home === team || odd.away === team) &&
+        odd.prop === propNamer["PTS"] &&
+        player.name === odd.name
+    ).overAmt;
+    assistOdds = odds.odds.find(
+      (odd) =>
+        (odd.home === team || odd.away === team) &&
+        odd.prop === propNamer["AST"] &&
+        player.name === odd.name
+    ).overAmt;
+    reboundOdds = odds.odds.find(
+      (odd) =>
+        (odd.home === team || odd.away === team) &&
+        odd.prop === propNamer["REB"] &&
+        player.name === odd.name
+    ).overAmt;
+  }
+  const getHitRate = (array, odds) => {
+    var hits = 0;
+    const length = array.length;
+    for (var i = length - 1; i >= 0; i--) if (array[i] > odds) hits++;
+    return (hits / length).toFixed(2) * 100;
   };
 
-  const renderRows = (oddsAmt) => {
-    const rows = [];
-    for (let i = 2; i <= 10; i++) {
-      const minValue = getMin(i) - 0.5;
-      const maxValue = getMax(i) - 0.5;
-
-      let minClass = "";
-      let maxClass = "";
-
-      // Check conditions to determine classes for highlighting
-      if (maxValue < oddsAmt && oddsAmt !== 1000) {
-        maxClass = "highlight-red";
-      } else if (minValue > oddsAmt) {
-        minClass = "highlight-green";
+  // get streak
+  const getStreak = (array, odds) => {
+    var streak = 0;
+    for (var i = array.length - 1; i >= 0; i--) {
+      if (array[i] > odds) {
+        if (streak < 0) return streak;
+        streak++;
+      } else {
+        if (streak > 0) return streak;
+        streak--;
       }
-      console.log(maxClass);
-      rows.push(
-        <tr key={i}>
-          <td className="text-center firstItem">{i}</td>
-          <td className={`text-center ${minClass}`}>{minValue}</td>
-          <td className={`text-center ${maxClass}`}>{maxValue}</td>
-        </tr>
-      );
     }
-    return rows;
   };
+  const getAvg = (array) => {
+    const sum = array.reduce((a, b) => a + b, 0);
+    const avg = sum / array.length || 0;
+    return avg;
+  };
+  const getVs = (position, prop) => {
+    if (defenseData !== undefined) {
+      try {
+        var vs = defenseData.find(
+          (team) => team.position === position && team.prop === prop
+        )[vsTeam];
+        if (vs > 30) vs = 30;
+        return vs;
+      } catch (error) {
+        return "none";
+      }
+    }
+  };
+  const renderTable = () => {
+    const pointsVs = getVs(player.position, "PTS");
+    const assistsVs = getVs(player.position, "AST");
+    const reboundsVs = getVs(player.position, "REB");
+    const ptsVsRedShade = pointsVs < 15 ? 0 : (pointsVs * 255) / 30;
+    const astVsRedShade = assistsVs < 15 ? 0 : (assistsVs * 255) / 30;
+    const rebVsRedShade = reboundsVs < 15 ? 0 : (reboundsVs * 255) / 30;
+    const ptsVsGreenShade = pointsVs > 14 ? 0 : ((31 - pointsVs) * 255) / 30;
+    const astVsGreenShade = assistsVs > 14 ? 0 : ((31 - assistsVs) * 255) / 30;
+    const rebVsGreenShade =
+      reboundsVs > 14 ? 0 : ((31 - reboundsVs) * 255) / 30;
+    const ptsStreak = pointOdds ? getStreak(player.PTS, pointOdds) : null;
+    const astStreak = assistOdds ? getStreak(player.AST, assistOdds) : null;
+    const rebStreak = reboundOdds ? getStreak(player.REB, reboundOdds) : null;
+    const pointColorStyle = {
+      backgroundColor:
+        ptsStreak > 1
+          ? `rgba(0, 255, 0, 0.7)` // Green tint
+          : ptsStreak < -1
+          ? `rgba(255, 0, 0, 0.7)` // Red tint
+          : null, // No background color if not greater than 1 or less than -1
+    };
+    const assistColorStyle = {
+      backgroundColor:
+        astStreak > 1
+          ? `rgba(0, 255, 0, 0.7)` // Green tint
+          : astStreak < -1
+          ? `rgba(255, 0, 0, 0.7)` // Red tint
+          : null, // No background color if not greater than 1 or less than -1
+    };
+    const reboundColorStyle = {
+      backgroundColor:
+        rebStreak > 1
+          ? `rgba(0, 255, 0, 0.7)` // Green tint
+          : rebStreak < -1
+          ? `rgba(255, 0, 0, 0.7)` // Red tint
+          : null, // No background color if not greater than 1 or less than -1
+    };
 
-  const renderFirstHits = () => {
-    const firstHits = player.firstHits;
-    const keysToSkip = ["__typename", "_id", "name", "team", "type"];
-    console.log(firstHits);
-    const rows = [];
-    // Iterate through the keys in firstHits
-    Object.keys(firstHits).forEach((key, index) => {
-      // Check if the key is in the keysToSkip array
-      if (!keysToSkip.includes(key)) {
-        // Assuming your data structure in firstHits[key] is appropriate for rendering
-        rows.push(
-          <tr key={index}>
-            <td className="text-center">{key}</td>
-            <td className="text-center">{Math.ceil(firstHits[key])}</td>
-            {/* Add additional columns if needed */}
+    return (
+      <Table>
+        <thead className="pcThead">
+          <tr className="pcTr">
+            <th className="pcTh"></th>
+            <th className="pcTh">10GameAvg</th>
+            <th className="pcTh">Odds</th>
+            <th className="pcTh">Hit Rate</th>
+            <th className="pcTh">Streak</th>
+            <th className="pcTh">Avg First Hit</th>
+            <th className="pcTh">VS Ranking</th>
           </tr>
-        );
-      }
-    });
-    return rows;
+        </thead>
+        <tbody>
+          <tr className="pcTr">
+            <th className="pcTh">Points</th>
+            <td className="pcTd">{Math.ceil(getAvg(player.PTS.slice(-10)))}</td>
+            {/* if pointOdds else return No Bet */}
+            <td className="pcTd">{pointOdds ? pointOdds : "None"}</td>
+            <td className="pcTd">
+              {pointOdds ? getHitRate(player.PTS, pointOdds) : "None"}%
+            </td>
+            <td className="pcTd" style={pointColorStyle}>
+              {ptsStreak !== null ? ptsStreak : "None"}
+            </td>
+
+            <td className="pcTd">{(player.firstHits.make / 60).toFixed(2)}</td>
+            <td
+              className="pcTd"
+              style={{
+                backgroundColor: `rgba(${ptsVsRedShade}, ${ptsVsGreenShade}, 0, .7)`,
+              }}
+            >
+              {pointOdds ? pointsVs : "none"}
+            </td>
+          </tr>
+          <tr className="pcTr">
+            <th className="pcTh">Rebounds</th>
+            <td className="pcTd">{Math.ceil(getAvg(player.REB.slice(-10)))}</td>
+            <td className="pcTd">{reboundOdds ? reboundOdds : "None"}</td>
+            <td className="pcTd">
+              {reboundOdds ? getHitRate(player.REB, reboundOdds) : "None"}%
+            </td>
+            <td className="pcTd" style={reboundColorStyle}>
+              {rebStreak !== null ? rebStreak : "None"}
+            </td>
+            <td className="pcTd">{(player.firstHits.reb / 60).toFixed(2)}</td>
+            <td
+              className="pcTd"
+              style={{
+                backgroundColor: `rgba(${rebVsRedShade}, ${rebVsGreenShade}, 0, .7)`,
+              }}
+            >
+              {reboundOdds ? reboundsVs : "none"}
+            </td>
+          </tr>
+          <tr className="pcTr">
+            <th className="pcTh">Assists</th>
+            <td className="pcTd">{Math.ceil(getAvg(player.AST.slice(-10)))}</td>
+            <td className="pcTd">{assistOdds ? assistOdds : "None"}</td>
+            <td className="pcTd">
+              {assistOdds ? getHitRate(player.AST, assistOdds) : "None"}%
+            </td>
+            <td className="pcTd" style={assistColorStyle}>
+              {astStreak !== null ? astStreak : "None"}
+            </td>
+            <td className="pcTd">
+              {(player.firstHits.assist / 60).toFixed(2)}
+            </td>
+            <td
+              className="pcTd"
+              style={{
+                backgroundColor: `rgba(${astVsRedShade}, ${astVsGreenShade}, 0, .7)`,
+              }}
+            >
+              {assistOdds ? assistsVs : "none"}
+            </td>{" "}
+          </tr>
+        </tbody>
+      </Table>
+    );
   };
 
-  const handleInputChange = (e) => {
-    // Get the input value from the event object
-    const value = e.target.value;
-    setInput(value);
-  };
+  // !!! ADD CUSTOM NUMBER INPUT FOR PROPS TO GET SEPERETE ODDS SEPERATE TABLE
 
   return (
     <Container className="playerCard">
-      <Stack>
-        <span
-          style={{
-            display: "flex",
-            justifyContent: "space-evenly",
-          }}
-        >
-          <h4>Props</h4>
-          <span>
-            <Button
-              onClick={() => setStatType("streaks")}
-              style={{ margin: "5px" }}
-            >
-              Streaks
-            </Button>
-
-            <Button
-              onClick={() => setStatType("firstHits")}
-              style={{ margin: "5px" }}
-            >
-              First Hits
-            </Button>
-          </span>
-        </span>
-        <span style={{ display: "flex", justifyContent: "space-between" }}>
-          <div style={{ margin: "30px" }}>{renderButtons()}</div>
-          <div
-            style={{
-              margin: "30px",
-              flex: 1,
-              display: "flex",
-              justifyContent: "center",
-            }}
-          >
-            {statType === "streaks" && (
-              <Table border="1">
-                <tr>
-                  <th className="text-center firstItem"># of games</th>
-                  <th className="text-center">Over</th>
-                  <th className="text-center">Under</th>
-                </tr>
-                {renderRows(playerOdds ? playerOdds.overAmt : 1000)}
-              </Table>
-            )}
-            {statType === "rate" && (
-              <div>
-                <Stack
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <h2>{prop}</h2>
-                  <input onChange={handleInputChange} />
-                  <span>
-                    <br />
-                    {player.name + " hits " + input + " " + prop}
-                    <hr />
-                    {percent + " % of the time"}
-                  </span>
-                </Stack>
-              </div>
-            )}
-            {statType === "firstHits" && (
-              <>
-                {
-                  <Table>
-                    <h3>(In Seconds)</h3>
-                    <tbody>{renderFirstHits()}</tbody>
-                  </Table>
-                }
-              </>
-            )}
-          </div>
-        </span>
-      </Stack>
+      <div>{renderTable()}</div>
     </Container>
   );
 };

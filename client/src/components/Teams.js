@@ -63,7 +63,7 @@ const teamImages = {
   UTAH: UTAH,
   WAS: WAS,
 };
-const NBATeams = ({ setTeam }) => {
+const NBATeams = ({ setTeam, oddsData }) => {
   const teams = {
     Atlantic: ["BOS", "BKN", "NYK", "PHI", "TOR"],
     Central: ["CHI", "CLE", "DET", "IND", "MIL"],
@@ -72,7 +72,11 @@ const NBATeams = ({ setTeam }) => {
     Pacific: ["GS", "LAC", "LAL", "PHX", "SAC"],
     Southwest: ["DAL", "HOU", "MEM", "NO", "SAS"],
   };
- 
+  const todaysTeams = new Set();
+  for (let i = 0; i < oddsData.length; i++) {
+    todaysTeams.add(oddsData[i].home);
+    todaysTeams.add(oddsData[i].away);
+  }
 
   const changeTeam = (teamName) => {
     setTeam(teamName);
@@ -84,10 +88,10 @@ const NBATeams = ({ setTeam }) => {
           <h2>{division}</h2>
           <ButtonGroup className="TeamButtonGroup">
             {teamList.map((team, index) => (
-              <Button
-                className="teamButton"
-                onClick={() => changeTeam(team)}
-              >
+              <Button 
+              className="teamButton"
+              variant={todaysTeams.has(team) ? 'success' : 'primary'} 
+              onClick={() => changeTeam(team)}>
                 <img
                   src={teamImages[team]}
                   alt={team}
