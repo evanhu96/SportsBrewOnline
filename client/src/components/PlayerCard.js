@@ -12,38 +12,38 @@ const propNamer = {
   REB: "rebound",
 };
 const PlayerCard = ({ player, odds, team, defenseData }) => {
+  const [customProp, setCustomProp] = useState(null);
+  const [customOdds, setCustomOdds] = useState(null);
+
   // find odds with player.name and team props
   var pointOdds, assistOdds, reboundOdds, vsTeam;
   if (odds) {
     vsTeam = odds.odds.find((odd) => odd.home === team || odd.away === team);
     vsTeam = vsTeam.home === team ? vsTeam.away : vsTeam.home;
-    try{
-
+    try {
       pointOdds = odds.odds.find(
         (odd) =>
-        (odd.home === team || odd.away === team) &&
-        odd.prop === propNamer["PTS"] &&
-        player.name === odd.name
-        ).overAmt;
-      }catch{}
-      try{
-
-        assistOdds = odds.odds.find(
-          (odd) =>
+          (odd.home === team || odd.away === team) &&
+          odd.prop === propNamer["PTS"] &&
+          player.name === odd.name
+      ).overAmt;
+    } catch {}
+    try {
+      assistOdds = odds.odds.find(
+        (odd) =>
           (odd.home === team || odd.away === team) &&
           odd.prop === propNamer["AST"] &&
           player.name === odd.name
-          ).overAmt;
-        }catch{}
-        try{
-
-          reboundOdds = odds.odds.find(
-            (odd) =>
-            (odd.home === team || odd.away === team) &&
-            odd.prop === propNamer["REB"] &&
-            player.name === odd.name
-            ).overAmt;
-          }catch{}
+      ).overAmt;
+    } catch {}
+    try {
+      reboundOdds = odds.odds.find(
+        (odd) =>
+          (odd.home === team || odd.away === team) &&
+          odd.prop === propNamer["REB"] &&
+          player.name === odd.name
+      ).overAmt;
+    } catch {}
   }
   const getHitRate = (array, odds) => {
     var hits = 0;
@@ -51,7 +51,9 @@ const PlayerCard = ({ player, odds, team, defenseData }) => {
     for (var i = length - 1; i >= 0; i--) if (array[i] > odds) hits++;
     return (hits / length).toFixed(2) * 100;
   };
-
+  console.log(player);
+  console.log(customOdds);
+  console.log(customProp);
   // get streak
   const getStreak = (array, odds) => {
     var streak = 0;
@@ -83,6 +85,13 @@ const PlayerCard = ({ player, odds, team, defenseData }) => {
       }
     }
   };
+  const handleSelectChange = (e) => {
+    setCustomProp(e.target.value);
+  };
+  const handleInputChange = (event) => {
+    setCustomOdds(event.target.value);
+  };
+
   const renderTable = () => {
     const pointsVs = getVs(player.position, "PTS");
     const assistsVs = getVs(player.position, "AST");
@@ -97,6 +106,9 @@ const PlayerCard = ({ player, odds, team, defenseData }) => {
     const ptsStreak = pointOdds ? getStreak(player.PTS, pointOdds) : null;
     const astStreak = assistOdds ? getStreak(player.AST, assistOdds) : null;
     const rebStreak = reboundOdds ? getStreak(player.REB, reboundOdds) : null;
+    const customStreak = customOdds
+      ? getStreak(player[customProp], customOdds)
+      : null;
     const pointColorStyle = {
       backgroundColor:
         ptsStreak > 1
@@ -199,6 +211,38 @@ const PlayerCard = ({ player, odds, team, defenseData }) => {
             >
               {assistOdds ? assistsVs : "none"}
             </td>{" "}
+          </tr>
+          <tr className="pcTr">
+            <th className="pcTh">
+              <select
+                id="statsDropdown"
+                onChange={handleSelectChange}
+                value={customProp}
+              >
+                <option value="">Select...</option>
+                <option value="PTS">PTS</option>
+                <option value="AST">AST</option>
+                <option value="REB">REB</option>
+              </select>
+            </th>
+            <td className="pcTd">-</td>
+            <td className="pcTd">
+              <input
+                type="number"
+                id="numberInput"
+                value={customOdds}
+                onChange={handleInputChange}
+                style={{ width: "65px" }}
+              />
+            </td>
+            <td className="pcTd">
+              {customOdds ? getHitRate(player[customProp], customOdds) : "None"}%
+            </td>
+            <td className="pcTd" style={assistColorStyle}>
+              {customStreak !== null ? customStreak : "None"}
+            </td>
+            <td className="pcTd">-</td>
+            <td className="pcTd">-</td>{" "}
           </tr>
         </tbody>
       </Table>
