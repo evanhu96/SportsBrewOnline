@@ -48,7 +48,11 @@ const main = async ({ play, roster1, roster2, team1 }) => {
     return [{ turnoverType: "turnover", type: "turnover", playerId: team1 }];
   else if (play.split(" ")[play.split(" ").length - 1] === "turnover")
     turnoverType = "turnover";
-  console.log(roster1)
+
+  console.log({
+    turnoverType,
+    play,
+  });
   const turnoverObj = await splitNGet({
     play,
     splitBy: turnoverType,
@@ -56,8 +60,22 @@ const main = async ({ play, roster1, roster2, team1 }) => {
     roster: roster1,
     type: "turnover",
   });
-  turnoverObj.turnoverType = turnoverType;
-  arr.push(turnoverObj);
+  if (turnoverObj) {
+    console.log(roster1)
+    turnoverObj.turnoverType = turnoverType;
+    arr.push(turnoverObj);
+  } else {
+    console.log(roster2)
+    const newTurnoverObj = await splitNGet({
+      play,
+      splitBy: turnoverType,
+      arrIdx: 0,
+      roster: roster2,
+      type: "turnover",
+    });
+    newTurnoverObj.turnoverType = turnoverType;
+    arr.push(newTurnoverObj);
+  }
 
   if (play.includes("steal")) {
     const stealObj = await splitNGet({

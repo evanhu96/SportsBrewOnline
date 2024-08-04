@@ -19,6 +19,7 @@ const PlayerCard = ({ player, odds, team, defenseData }) => {
   var pointOdds, assistOdds, reboundOdds, vsTeam;
   if (odds) {
     vsTeam = odds.odds.find((odd) => odd.home === team || odd.away === team);
+    console.log(odds)
     vsTeam = vsTeam.home === team ? vsTeam.away : vsTeam.home;
     try {
       pointOdds = odds.odds.find(

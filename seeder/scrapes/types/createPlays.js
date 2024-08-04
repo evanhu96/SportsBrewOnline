@@ -19,15 +19,9 @@ const translatedSelector = (xpath) => {
     .join(">");
 };
 
-const containerPath = translatedSelector(
-  "#themeProvider>div>div>div:nth-child(6)>div>div:nth-child(1)>section:nth-child(2)>div>div>div>div>div>div>table>tbody"
-);
+const containerPath = translatedSelector("tbody:nth-child(3)");
 
-const buttonListPath = translatedSelector(
-  "#themeProvider/div/div/div[6]/div/div[1]/section[2]/div/nav/ul"
-);
 const scrape = async ({ gameId, rosters, home, away }) => {
-  console.log(home,away)
   home = fixTeams(home);
   away = fixTeams(away);
   const url = "https://www.espn.com/nba/playbyplay/_/gameId/" + gameId;
@@ -35,19 +29,30 @@ const scrape = async ({ gameId, rosters, home, away }) => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   await page.goto(url);
+  console.log(url);
+  const rolePropertyValue = "tablist"; // Replace with the actual value you're looking for
 
-  const buttonListLength = await page.evaluate(
-    (buttonListPath) => document.querySelector(buttonListPath).children.length,
-    buttonListPath
-  );
-  for (let i = 1; i <= buttonListLength; i++) {
-    const quarter = i;
-    await page.click(`${buttonListPath}>li:nth-child(${i})>button`);
-    await delay(25);
-    const firstPlay = await page.$eval(
-      containerPath + `>tr:nth-child(1)>td:nth-child(3)`,
-      (el) => el.textContent
+  const buttonSelector = `[role="${rolePropertyValue}"]`;
+
+  const buttonList = await page.$$(buttonSelector);
+  var buttonChildrenListLength = 0;
+  if (buttonList.length > 0) {
+    const buttonListHandle = buttonList[0];
+    buttonChildrenListLength = await page.evaluate(
+      (tbody) => tbody.children.length,
+      buttonListHandle
     );
+    console.log(
+      `Second Tbody: Number of children - ${buttonChildrenListLength}`
+    );
+  } else {
+    console.log("No second tbody found on the page.");
+  }
+
+  for (let i = 1; i <= buttonChildrenListLength; i++) {
+    const quarter = i;
+    await page.click(`${buttonSelector}>li:nth-child(${i})>button`);
+    await delay(25);
 
     const container = await page.$(containerPath);
     const playsLength = await container.evaluate((el) => el.children.length);
@@ -136,6 +141,7 @@ const getPlayByPlay = async ({ gameId, home, away, rosters }) => {
     console.error("Error:", error);
     throw error;
   }
+
   await Play.insertMany(plays);
   console.log("plays inserted");
   return plays;

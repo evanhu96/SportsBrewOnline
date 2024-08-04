@@ -7,6 +7,7 @@ const main = async ({ play, splitBy, arrIdx, roster, type }) => {
     playerFullName: player,
     roster: roster,
   });
+
   if (playerObj === null) return null;
   obj.playerId = playerObj.id;
   if (playerObj == 0) obj.playerId = "coach";

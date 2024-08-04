@@ -1,7 +1,16 @@
 var teams = require("./teams").nba_teams;
 teams = Object.values(teams);
 teams = teams.filter((team, index) => teams.indexOf(team) === index);
-const  { Game, BoxScore, Play, Player, RosterSpot, TeamGame, Rankings, FirstHit } = require("../../server/models");
+const {
+  Game,
+  BoxScore,
+  Play,
+  Player,
+  RosterSpot,
+  TeamGame,
+  Rankings,
+  FirstHit,
+} = require("../../server/models");
 const fs = require("fs");
 const db = require("../../server/config/connection");
 const delay = (ms) => new Promise((res) => setTimeout(res, ms));
@@ -14,7 +23,7 @@ const {
   createRosters,
   createRankings,
   createFirstHits,
-  createOdds
+  createOdds,
 } = require("./types");
 db.on("error", console.error.bind(console, "connection error:"));
 db.once("open", async () => {
@@ -27,7 +36,6 @@ db.once("open", async () => {
   const gameIds = await Game.distinct("gameId");
   const firstHitsIds = await FirstHit.distinct("gameId");
   const games = await Game.find({}).lean();
-
   // process.exit();
   games.forEach(
     (game) =>
@@ -47,6 +55,7 @@ db.once("open", async () => {
     } else {
       await delay(1000);
       const gameTeams = await createGames({ year, gameId });
+      console.log(gameTeams, "gameTeams");
       home = gameTeams.home;
       away = gameTeams.away;
     }
@@ -58,6 +67,7 @@ db.once("open", async () => {
 
     if (!playIds.includes(gameId)) {
       await delay(1000);
+      console.log("inside here,home,awda", home, away, "inside here,home,awda");
       await createPlays({ year, gameId, home, away, rosters });
     }
     if (!firstHitsIds.includes(gameId)) {
@@ -93,7 +103,7 @@ db.once("open", async () => {
     // const rosters = require("./rosters.json");
     for (var i = 0; i < teams.length; i++) {
       const team = teams[i];
-      if (team==="NY" )continue
+      if (team === "NY") continue;
       rosters[team] = await createRosters(team);
       await delay(1000);
       const url = `https://www.espn.com/nba/team/schedule/_/name/${team}/season/2024`;
@@ -109,10 +119,12 @@ db.once("open", async () => {
     // console.log(uniqueGameIds.slice(-10));
 
     for (var k = 0; k < uniqueGameIds.length; k++) {
-      const gameId = uniqueGameIds[k].includes("/") ? uniqueGameIds[k].split("/")[0] : uniqueGameIds[k];
+      const gameId = uniqueGameIds[k].includes("/")
+        ? uniqueGameIds[k].split("/")[0]
+        : uniqueGameIds[k];
+      console.log(rosters, "rosters");
       await getData({ year: 2024, gameId, rosters });
     }
-
   };
   await main();
   console.log("main complete");

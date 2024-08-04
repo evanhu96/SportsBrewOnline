@@ -21,12 +21,8 @@ const translatedSelector = (xpath) => {
     .join(">");
 };
 
-const awayTeamPath = translatedSelector(
-  "#themeProvider/div/div/div[1]/div/div[2]/div[2]/div[2]/div/div/div[2]/table/tbody/tr[1]/td[1]"
-);
-const homeTeamPath = translatedSelector(
-  "#themeProvider/div/div/div[1]/div/div[2]/div[2]/div[2]/div/div/div[2]/table/tbody/tr[2]/td[1]"
-);
+const awayTeamPath = ".LogoEnhanced__Logo";
+const homeTeamPath = ".LogoEnhanced__Logo";
 // get length of this elements td children
 var awayQuartersPath = translatedSelector(
   "#themeProvider/div/div/div[1]/div/div[2]/div[2]/div[2]/div/div/div[2]/table/tbody/tr[1]"
@@ -38,19 +34,7 @@ var homeQuartersPath = translatedSelector(
 const homeRecordsPath = translatedSelector(
   "#themeProvider/div/div/div[1]/div/div[2]/div[1]/div[2]/div[1]/div[1]/div[2]"
 );
-const awayRecordsPath = translatedSelector(
-  "#themeProvider/div/div/div[1]/div/div[2]/div[3]/div[2]/div[1]/div[1]/div[2]"
-);
-const otherAwayRecordsPath = translatedSelector(
-  `   
-    #themeProvider/div/div/div[1]/div/div/div[1]/div[2]/div[1]/div[1]/div[2]
-  `
-);
-const otherHomeRecordsPath = translatedSelector(
-  `
-    #themeProvider/div/div/div[1]/div/div/div[3]/div[2]/div[1]/div[1]/div[2]
-  `
-);
+
 const otherAwayTeamPath = translatedSelector(
   `
     #themeProvider/div/div/div[1]/div/div/div[2]/div[2]/div/div/div[2]/table/tbody/tr[1]/td[1]
@@ -75,9 +59,7 @@ const otherHomeQuartersPath = translatedSelector(
 );
 
 // finsihed
-const datePath = translatedSelector(
-  "#themeProvider/div/div/div[6]/div/div[1]/section[3]/div/div[1]/div[1]/div[2]/span[1]"
-);
+const datePath = translatedSelector(".n8.GameInfo__Meta");
 
 const attendancePath = translatedSelector(" .Attendance__Numbers");
 const otherAttendancePath = translatedSelector(
@@ -87,7 +69,7 @@ const otherAttendancePath = translatedSelector(
   `
 );
 const refereesPath = translatedSelector(
-  "#themeProvider/div/div/div[6]/div/div[1]/section[3]/div/div[2]/ul"
+  ".GameInfo__List list inline-flex flex-wrap"
 );
 const teamName = async (city) => {
   var realTeamName = city;
@@ -101,17 +83,30 @@ const teamName = async (city) => {
 };
 const getGameData = async ({ gameId, year }) => {
   // check if data already exists
-  if(gameId.includes("/")) gameId = gameId.split("/")[0]
-  console.log(gameId, "kiojoiuho");
+  if (gameId.includes("/")) gameId = gameId.split("/")[0];
   const url = "https://www.espn.com/nba/game?gameId=" + gameId;
   try {
     const response = await axios(url);
     const html = response.data;
     const $ = cheerio.load(html);
-    var awayTeam = await teamName($(awayTeamPath).text());
-    var homeTeam = await teamName($(homeTeamPath).text());
-    console.log(awayTeam, homeTeam, "ounoub");
-    const date = $(datePath).text();
+    console.log(url, "url");
+    // log paths
+
+    var awayTeam = $(awayTeamPath)
+      .first()
+      .attr("src")
+      .split("scoreboard/")[1]
+      .split(".png")[0]
+      .toUpperCase();
+    var homeTeam = $(homeTeamPath)
+      .eq(1)
+      .attr("src")
+      .split("scoreboard/")[1]
+      .split(".png")[0]
+      .toUpperCase();
+console.log(awayTeam, "awayTeam");
+console.log(homeTeam, "homeTeam");
+          const date = $(datePath).text();
     // turn date string into epoch
 
     var attendance = $(attendancePath).text();
@@ -122,13 +117,11 @@ const getGameData = async ({ gameId, year }) => {
       referees.push(referee);
     }
     var awayRecords = $(homeRecordsPath).text();
-    if (!awayRecords) {
-      awayTeam = await teamName($(otherAwayTeamPath).text());
-      homeTeam = await teamName($(otherHomeTeamPath).text());
-      attendance = $(otherAttendancePath).text();
-      homeQuartersPath = otherHomeQuartersPath;
-      awayQuartersPath = otherAwayQuartersPath;
-    }
+    // if (!awayRecords) {
+    //   attendance = $(otherAttendancePath).text();
+    //   homeQuartersPath = otherHomeQuartersPath;
+    //   awayQuartersPath = otherAwayQuartersPath;
+    // }
     const away = awayRecords ? fixTeams(awayRecords.trim()) : awayTeam;
     const home = awayRecords
       ? fixTeams($(homeRecordsPath).text().trim())
@@ -224,6 +217,8 @@ const getGameData = async ({ gameId, year }) => {
     } catch (err) {
       console.log(err);
     }
+    console.log(awayTeam, "awayTeam");
+    console.log(homeTeam, "homeTeam");
     return { home: homeTeam, away: awayTeam }; // Return your obj or data
   } catch (error) {
     console.error("Error:", error);

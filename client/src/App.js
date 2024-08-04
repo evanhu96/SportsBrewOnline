@@ -14,7 +14,7 @@ import "./App.css";
 
 import Stats from "./pages/Stats";
 const httpLink = createHttpLink({
-  uri: "https://sportsbrew.online/graphql",
+  uri: "https://sportsbrew.online:3001/graphql",
   // uri: "http://localhost:3001/graphql",
   // Replace with your server's GraphQL endpoint
 });

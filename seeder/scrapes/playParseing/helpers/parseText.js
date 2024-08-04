@@ -9,7 +9,7 @@ const {
   handleFoul,
 } = require("../playTypes");
 const main = async ({ play, team1, team2, roster1, roster2 }) => {
-  console.log(play, team1,team2);
+
   let plays = [];
   if (play.includes("makes"))
     plays = await handleMake({ play, roster: roster1 });

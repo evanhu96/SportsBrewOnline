@@ -14,7 +14,7 @@ async function main() {
     console.log("Rankings created");
 
     const defense = await teamDefRankings();
-    console.log("DefRankings created", defense);
+    console.log("DefRankings created");
     await DefRankings.deleteMany({});
     console.log("DefRankings deleted");
     await DefRankings.insertMany(defense);

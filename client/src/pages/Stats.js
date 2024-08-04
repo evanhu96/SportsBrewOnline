@@ -16,7 +16,7 @@ const Stats = () => {
   const [playerName, setPlayerName] = useState("");
   const { error, data } = useQuery(QUERY_TEAM_PLAYERS);
   if (error) console.log(error);
-  if (data) console.log(data.teamPlayers[0]);
+  // if (data) console.log(data.teamPlayers[0]);
   const { data: oddsData } = useQuery(GET_ODDS);
   const { data: defenseData, error: e } = useQuery(GET_DEF_RANKINGS);
 
